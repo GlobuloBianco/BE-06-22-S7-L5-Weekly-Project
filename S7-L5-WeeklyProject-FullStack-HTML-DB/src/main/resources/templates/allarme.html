@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<title>Allarme</title>
+<style>
+.card {
+	width: 300px;
+	aspect-ratio: 1/1;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	margin: 1em;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+}
+
+#risultato {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.nome {
+	font-weight: bold;
+	text-align: center;
+	font-size: 2em;
+}
+
+.centro {
+	text-align: center;
+	margin: 5px;;
+}
+
+#risultato {
+	margin-bottom: 0;
+}
+
+</style>
+</head>
+<body>
+
+	<main class="container">
+		<!-- navbar -->
+		<nav style="display: flex; justify-content: space-between;"
+			aria-label="breadcrumb">
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/crea">Crea</a></li>
+				<li><a href="/allarme" class="secondary">Allarme</a></li>
+			</ul>
+			<div>
+				<a style="margin-left: 3em; cursor: pointer;"
+					class="contrast outline" onclick="toggleMode()"> Tema &nbsp;<i
+					class="bi bi-circle-half"></i>
+				</a>
+			</div>
+		</nav>
+		<!-- spinner -->
+		<div class="container" style="width: 30%">
+			<progress value="100" max="100"></progress>
+		</div>
+		<!-- main -->
+		<div class="container">
+			<h2>
+				<i class="bi bi-broadcast"></i> Gestione Incendio
+			</h2>
+			<h3 style="margin-bottom: 0; text-align: center;">
+				<i class="bi bi-list-ul"></i> Lista sonde disponibili:
+			</h3>
+			<div id="risultato"></div>
+		</div>
+	</main>
+	<script>
+		// dark mode
+      function toggleMode() {
+        const body = document.querySelector('html');
+        const theme = body.getAttribute('data-theme');
+        body.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
+      }
+	
+      fetch('http://localhost:8080/alarm')
+      .then(response => response.json())
+      .then(data => {
+        const risultatoDiv = document.getElementById('risultato');
+        if (data.length === 0) {
+          const container = document.createElement('article');
+          container.classList.add('container');
+          const messaggio = document.createElement('p');
+          messaggio.innerHTML = '<h2 style="font-size:3em; text-align:center;">Nessun risultato trovato.</h2>';
+          container.appendChild(messaggio);
+          risultatoDiv.appendChild(container);
+        } else {
+          data.forEach(element => {
+            
+            const container = document.createElement('article');
+            container.classList.add('container');
+            container.classList.add('card');
+			//nome sonda
+            const nome = document.createElement('p');
+            nome.textContent = 'Sonda #' + element.id;
+            nome.classList.add('nome');
+			//lat e lon
+            const dettagli = document.createElement('details');
+            dettagli.setAttribute("style", "margin-bottom:0; padding-bottom: 0;");
+            dettagli.setAttribute("open", "");
+            const titolo = document.createElement('summary');
+            titolo.innerHTML = "Dettagli: ";
+            const lista = document.createElement('ul');
+            const lat = document.createElement('li');
+            const lon = document.createElement('li');
+            const fumo = document.createElement('li');
+            lat.textContent = "Latitudine: " + element.latitudine;
+            lon.textContent = "Longitudine: " + element.longitudine;
+            
+            if (element.livelloFumo >=8) {
+                fumo.innerHTML = "<li>Livello Fumo: <span style='color:red;'>" + element.livelloFumo + "</span></li>";
+            } else if (element.livelloFumo >4){
+            	fumo.innerHTML = "<li>Livello Fumo: <span style='color:orange;'>" + element.livelloFumo + "</span></li>";
+            } else {
+            	fumo.innerHTML = "<li>Livello Fumo: <span style='color:yellow;'>" + element.livelloFumo + "</span></li>";
+            	//fumo.innerHTML = "<li>Livello Fumo: " + element.livelloFumo + "</li>";
+            }
+
+
+            //append
+            container.appendChild(nome);
+			container.appendChild(dettagli);
+			dettagli.appendChild(titolo);
+			dettagli.appendChild(lista);
+			lista.appendChild(lat);
+			lista.appendChild(lon);
+			lista.appendChild(fumo);
+            risultatoDiv.appendChild(container);
+          });
+        }
+      })
+      .catch(error => console.error(error));
+	</script>
+</body>
+</html>

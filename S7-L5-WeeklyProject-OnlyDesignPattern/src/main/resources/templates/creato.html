@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet"
+			href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+		<title>Creazione Avvenuta</title>
+	</head>
+	<body style="display: flex; justify-content:center; align-items: center; height: 100vh; flex-direction:column;">
+	
+		<h1 style="font-size: 4em; margin-bottom: 0;">Creato con successo! <img src="https://media.tenor.com/eT_e-q0D5xoAAAAi/long-livethe-blob-sunglasses.gif" width="60px"></h1>
+		<small>Stai per venire reinderizzato!</small>
+		<div style="width:40%; margin-top: 5px;" class="container">
+			<progress></progress>
+		</div>
+	
+	<script>
+		setTimeout(function() {
+			  location.href = "http://localhost:8080/crea";
+		}, 3000);
+	</script>
+	</body>
+</html>
